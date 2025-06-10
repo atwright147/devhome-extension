@@ -1,0 +1,57 @@
+{
+  "name": "devhome-extension",
+  "version": "0.0.0",
+  "description": "A browser extension to provide a developer dashboard.",
+  "keywords": [
+    "browser-extension",
+    "devhome",
+    "dashboard",
+    "developer-tools"
+  ],
+  "author": "atwright147",
+  "homepage": "https://github.com/atwright147/devhome-extension#readme",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atwright147/devhome-extension"
+  },
+  "scripts": {
+    "lint": "biome lint src",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck",
+    "build": "vite build --config vite.config.chrome.ts",
+    "build:chrome": "vite build --config vite.config.chrome.ts",
+    "build:firefox": "vite build --config vite.config.firefox.ts",
+    "dev": "nodemon --config nodemon.chrome.json",
+    "dev:chrome": "nodemon --config nodemon.chrome.json",
+    "dev:firefox": "nodemon --config nodemon.firefox.json"
+  },
+  "type": "module",
+  "dependencies": {
+    "@mantine/core": "^8.1.0",
+    "@mantine/hooks": "^8.1.0",
+    "@mantine/notifications": "^8.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "webextension-polyfill": "^0.12.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@crxjs/vite-plugin": "^2.0.0-beta.32",
+    "@types/chrome": "^0.0.323",
+    "@types/node": "^22.15.21",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.1",
+    "@types/webextension-polyfill": "^0.12.3",
+    "@vitejs/plugin-react": "^4.5.0",
+    "fs-extra": "^11.3.0",
+    "nodemon": "^3.1.9",
+    "postcss": "^8.5.4",
+    "postcss-preset-mantine": "^1.17.0",
+    "postcss-simple-vars": "^7.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
