@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "DevHome",
+  "description": "A browser extension to provide a developer dashboard.",
+  "options_ui": {
+    "page": "src/pages/options/index.html"
+  },
+  "chrome_url_overrides": {
+    "newtab": "src/pages/newtab/index.html"
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "permissions": [
+    "activeTab"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "contentStyle.css",
+        "icon-128.png",
+        "icon-32.png"
+      ],
+      "matches": []
+    }
+  ]
+}
