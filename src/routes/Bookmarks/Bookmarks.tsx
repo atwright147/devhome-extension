@@ -1,8 +1,8 @@
 import { IconFolderFilled } from '@tabler/icons-react';
 
-import { Group } from '@mantine/core';
+import { Accordion, Group } from '@mantine/core';
 import { useBookmarks } from '@src/hooks/queries/bookmarks';
-import type { JSX } from 'react';
+import { Fragment, type JSX } from 'react';
 import browser from 'webextension-polyfill';
 
 function faviconURL(siteUrl: string | undefined): string {
@@ -47,23 +47,40 @@ function BookmarkTree({ nodes }: { nodes: BookmarkNode[] }) {
   if (!nodes || nodes.length === 0) return null;
 
   return (
-    <ul>
-      {nodes.map((node) => (
-        <li key={node.id}>
-          {
-            <a href={node.url} target="_blank" rel="noopener noreferrer">
+    <Accordion variant="contained" multiple>
+      {nodes.map((node) =>
+        node.children && node.children.length > 0 ? (
+          <Accordion.Item key={node.id} value={node.id}>
+            <Accordion.Control>
+              <Group align="center" gap={10}>
+                {getIcon(node)}
+                {node.title}
+              </Group>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <BookmarkTree nodes={node.children} />
+            </Accordion.Panel>
+          </Accordion.Item>
+        ) : node.url ? (
+          <div
+            key={node.id}
+            style={{ paddingLeft: 32, paddingTop: 4, paddingBottom: 4 }}
+          >
+            <a
+              href={node.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
               <Group align="center" gap={10}>
                 {getIcon(node)}
                 {node.title}
               </Group>
             </a>
-          }
-          {node.children && node.children.length > 0 && (
-            <BookmarkTree nodes={node.children} />
-          )}
-        </li>
-      ))}
-    </ul>
+          </div>
+        ) : null,
+      )}
+    </Accordion>
   );
 }
 
@@ -81,7 +98,6 @@ export function Bookmarks() {
   return (
     <div>
       <h1>Bookmarks</h1>
-      {/* <pre>{JSON.stringify(bookmarks, null, 2)}</pre> */}
       <BookmarkTree nodes={bookmarks?.[0]?.children || []} />
     </div>
   );
