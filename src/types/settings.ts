@@ -1,4 +1,4 @@
-export interface Config {
+export interface Settings {
   bookmarkFolder: string;
   githubAccessToken?: string;
   githubCacheTime?: number;

@@ -13,7 +13,7 @@ import { type JSX, useEffect } from 'react';
 import browser from 'webextension-polyfill';
 import { z } from 'zod';
 
-import type { Config } from '@src/types/config';
+import type { Config } from '@src/types/settings';
 
 const bookmarkFolders = [
   { value: '0', label: 'Bookmarks Bar' },

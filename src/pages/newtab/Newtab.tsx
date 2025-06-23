@@ -3,13 +3,15 @@ import '@mantine/core/styles.css';
 import { AppShell, Burger, Button, Modal, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useRoutes } from 'raviger';
 
 import { AppNavLink } from '@components/AppNavLink';
+import { ModalSettings } from '@components/ModalSettings';
 import { Bookmarks as BookmarksRoute } from '@src/routes/Bookmarks/Bookmarks';
 import { Dashboard as DashboardRoute } from '@src/routes/Dashboard/Dashboard';
+import { Github as GithubRoute } from '@src/routes/Github/Github';
 import { Home as HomeRoute } from '@src/routes/Home/Home';
-import { ModalSettings } from '../../components/ModalSettings';
 
 const queryClient = new QueryClient();
 
@@ -17,6 +19,7 @@ const routes = {
   '/': () => <HomeRoute />,
   '/dashboard': () => <DashboardRoute />,
   '/bookmarks': () => <BookmarksRoute />,
+  '/github': () => <GithubRoute />,
 };
 
 export default function App() {
@@ -45,6 +48,7 @@ export default function App() {
               <AppNavLink href="/" label="Home" />
               <AppNavLink href="/dashboard" label="Dashboard" />
               <AppNavLink href="/bookmarks" label="Bookmarks" />
+              <AppNavLink href="/github" label="Github" />
             </AppShell.Section>
 
             <Button onClick={handlersSettingsDialog.open}>Settings</Button>
@@ -58,6 +62,8 @@ export default function App() {
         opened={openedSettingsDialog}
         onClose={handlersSettingsDialog.close}
       />
+
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
