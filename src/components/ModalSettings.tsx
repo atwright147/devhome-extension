@@ -13,7 +13,7 @@ import { type JSX, useEffect } from 'react';
 import browser from 'webextension-polyfill';
 import { z } from 'zod';
 
-import type { Config } from '@src/types/settings';
+import type { Settings } from '@src/types/settings';
 
 const bookmarkFolders = [
   { value: '0', label: 'Bookmarks Bar' },
@@ -72,7 +72,7 @@ const schema = z.object({
 
 const DEFAULT_CACHE_TIME = 15;
 
-const defaultValues: Config = {
+const defaultValues: Settings = {
   bookmarkFolder: '0',
   githubAccessToken: '',
   githubCacheTime: DEFAULT_CACHE_TIME,

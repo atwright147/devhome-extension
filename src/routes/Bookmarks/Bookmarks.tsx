@@ -1,9 +1,9 @@
+import { Accordion, Group, Text } from '@mantine/core';
 import { IconFolderFilled } from '@tabler/icons-react';
-
-import { Accordion, Group } from '@mantine/core';
-import { useBookmarks } from '@src/hooks/queries/bookmarks';
-import { Fragment, type JSX } from 'react';
+import type { JSX } from 'react';
 import browser from 'webextension-polyfill';
+
+import { useBookmarks } from '@src/hooks/queries/bookmarks';
 
 function faviconURL(siteUrl: string | undefined): string {
   if (!siteUrl) {
@@ -27,12 +27,12 @@ function getIcon(node: BookmarkNode): JSX.Element {
           height: 16,
           verticalAlign: 'middle',
           marginRight: 4,
+          marginTop: 4,
         }}
       />
     );
   }
 
-  console.info(`Bookmark without URL: ${node.title || node.id}`);
   return <IconFolderFilled size={20} />;
 }
 
@@ -52,7 +52,7 @@ function BookmarkTree({ nodes }: { nodes: BookmarkNode[] }) {
         node.children && node.children.length > 0 ? (
           <Accordion.Item key={node.id} value={node.id}>
             <Accordion.Control>
-              <Group align="center" gap={10}>
+              <Group align="center" gap={10} wrap="nowrap">
                 {getIcon(node)}
                 {node.title}
               </Group>
@@ -72,9 +72,9 @@ function BookmarkTree({ nodes }: { nodes: BookmarkNode[] }) {
               rel="noopener noreferrer"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
-              <Group align="center" gap={10}>
+              <Group gap={10} wrap="nowrap" align="flex-start">
                 {getIcon(node)}
-                {node.title}
+                <Text>{node.title}</Text>
               </Group>
             </a>
           </div>
