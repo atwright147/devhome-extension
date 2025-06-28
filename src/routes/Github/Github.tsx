@@ -1,14 +1,14 @@
-import { Button, Container, Title } from '@mantine/core';
+import { Box, Button, Container, Stack, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useMemo } from 'react';
 
 import { ModalAddRepo } from '@components/ModalAddRepo';
+import { RepoCard } from '@components/RepoCard';
 import {
   useGithubSettings,
   usePullRequests,
   useRepos,
 } from '@src/hooks/queries/github/github';
-import browser from 'webextension-polyfill';
 
 export function Github() {
   const { data, isLoading, isError, error } = useRepos();
@@ -43,20 +43,28 @@ export function Github() {
   return (
     <>
       <Container>
-        <Title order={1}>Github</Title>
-        <Button variant="outline" onClick={handlersAddRepoModal.open}>
-          Add Repository
-        </Button>
+        <Stack mb="xs">
+          <Title order={1}>Github</Title>
+          <Button
+            variant="outline"
+            style={{ width: 'fit-content' }}
+            onClick={handlersAddRepoModal.open}
+          >
+            Add Repository
+          </Button>
+        </Stack>
 
-        <hr />
-
-        <pre>{JSON.stringify(pullRequestsData, null, 2)}</pre>
-
-        {reposToShow?.map((repo) => (
-          <div key={repo.id}>
-            <Title order={3}>{repo.name}</Title>
-          </div>
-        ))}
+        <Stack>
+          {pullRequestsData?.map((repo) => (
+            <RepoCard
+              key={repo.id}
+              name={repo.name}
+              description={repo.description}
+              url={repo.url}
+              prs={repo.details}
+            />
+          ))}
+        </Stack>
       </Container>
 
       <ModalAddRepo

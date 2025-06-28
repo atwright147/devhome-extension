@@ -77,6 +77,8 @@ export function usePullRequests(reposToFetch: RepoId[], limit = 10) {
             ... on Repository {
               id
               name
+              url
+              description
               pullRequests(first: ${limit}, states: [OPEN]) {
                 totalCount
                 nodes {
@@ -116,6 +118,8 @@ export function usePullRequests(reposToFetch: RepoId[], limit = 10) {
             return {
               id: repoId,
               name: repoGraphQLData.name,
+              url: repoGraphQLData.url,
+              description: repoGraphQLData.description,
               totalCount: repoGraphQLData.pullRequests.totalCount,
               // biome-ignore lint/suspicious/noExplicitAny: <explanation>
               details: repoGraphQLData.pullRequests.nodes.map((pr: any) => ({
@@ -131,6 +135,7 @@ export function usePullRequests(reposToFetch: RepoId[], limit = 10) {
           return {
             id: repoId,
             name: null,
+            url: null,
             totalCount: 0,
             details: [],
             error: `Could not fetch data for repo id ${repoId}`,
