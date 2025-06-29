@@ -1,6 +1,6 @@
 import { Accordion, Group, Text } from '@mantine/core';
 import { IconFolderFilled } from '@tabler/icons-react';
-import type { JSX } from 'react';
+import { type JSX, useEffect } from 'react';
 import browser from 'webextension-polyfill';
 
 import { useBookmarks } from '@src/hooks/queries/bookmarks';
@@ -44,6 +44,18 @@ type BookmarkNode = {
 };
 
 function BookmarkTree({ nodes }: { nodes: BookmarkNode[] }) {
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  useEffect(() => {
+    (async () => {
+      const settings = await browser.storage.local.get('settings');
+      console.info('settings:', settings);
+      console.info(
+        'bookmarkFolder children:',
+        await browser.bookmarks.getChildren(settings.settings.bookmarkFolder),
+      );
+    })();
+  }, []);
+
   if (!nodes || nodes.length === 0) return null;
 
   return (
@@ -98,6 +110,7 @@ export function Bookmarks() {
   return (
     <div>
       <h1>Bookmarks</h1>
+      <BookmarkTree nodes={bookmarks?.[0]?.children || []} />
       <BookmarkTree nodes={bookmarks?.[0]?.children || []} />
     </div>
   );

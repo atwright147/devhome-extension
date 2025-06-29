@@ -9,16 +9,12 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
-import { type JSX, useEffect } from 'react';
+import { type JSX, use, useEffect, useMemo } from 'react';
 import browser from 'webextension-polyfill';
 import { z } from 'zod';
 
+import { isFolder, useBookmarks } from '@src/hooks/queries/bookmarks';
 import type { Settings } from '@src/types/settings';
-
-const bookmarkFolders = [
-  { value: '0', label: 'Bookmarks Bar' },
-  { value: '1', label: 'Other Bookmarks' },
-];
 
 interface Props extends ModalProps {}
 
@@ -85,6 +81,8 @@ const defaultValues: Settings = {
 };
 
 export function ModalSettings({ ...props }: Props): JSX.Element {
+  const { data: bookmarks, isLoading, error } = useBookmarks();
+
   const form = useForm({
     mode: 'controlled',
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -106,6 +104,50 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
     })();
   }, []);
 
+  // Utility to recursively collect all folders in the bookmarks tree, skipping the root node if needed
+  function flattenFolders(
+    nodes: any[],
+    skipRoot = false,
+    parentPath = '',
+  ): { value: string; label: string }[] {
+    const result: { value: string; label: string }[] = [];
+    for (let i = 0; i < nodes.length; i++) {
+      const node = nodes[i];
+      if (isFolder(node)) {
+        if (skipRoot && i === 0) {
+          // Skip the first/top-level node, but process its children
+          if (node.children) {
+            result.push(...flattenFolders(node.children, false, parentPath));
+          }
+          continue;
+        }
+        const currentPath = parentPath
+          ? `${parentPath}/${node.title || 'Untitled Folder'}`
+          : node.title || 'Untitled Folder';
+        result.push({
+          value: node.id,
+          label: currentPath,
+        });
+        if (node.children) {
+          result.push(...flattenFolders(node.children, false, currentPath));
+        }
+      }
+    }
+    return result;
+  }
+
+  const bookmarkFolders = useMemo(() => {
+    if (isLoading) return [];
+    if (error) {
+      console.error('Error loading bookmarks:', error);
+      return [];
+    }
+    // Skip the top-level object
+    return bookmarks ? flattenFolders(bookmarks, true) : [];
+  }, [bookmarks, isLoading, error]);
+
+  console.info('Bookmark folders:', bookmarkFolders);
+
   const handleSubmit = async (values: typeof form.values) => {
     await browser.storage.local.set({ settings: values });
     props.onClose?.();
@@ -121,7 +163,7 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
             <Select
               label="Bookmark Folder"
               placeholder="Select a folder"
-              data={bookmarkFolders}
+              data={bookmarkFolders as any}
               {...form.getInputProps('bookmarkFolder')}
             />
           </Fieldset>
