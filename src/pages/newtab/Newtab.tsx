@@ -6,12 +6,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useRoutes } from 'raviger';
 
-import { AppNavLink } from '@components/AppNavLink';
 import { ModalSettings } from '@components/ModalSettings';
 import { Bookmarks as BookmarksRoute } from '@src/routes/Bookmarks/Bookmarks';
 import { Dashboard as DashboardRoute } from '@src/routes/Dashboard/Dashboard';
 import { Github as GithubRoute } from '@src/routes/Github/Github';
 import { Home as HomeRoute } from '@src/routes/Home/Home';
+import { Nav } from '../../components/Nav';
 
 const queryClient = new QueryClient();
 
@@ -45,10 +45,7 @@ export default function App() {
         <AppShell.Navbar p="md">
           <Stack justify="space-between" h="100%">
             <AppShell.Section>
-              <AppNavLink href="/" label="Home" />
-              <AppNavLink href="/dashboard" label="Dashboard" />
-              <AppNavLink href="/bookmarks" label="Bookmarks" />
-              <AppNavLink href="/github" label="Github" />
+              <Nav />
             </AppShell.Section>
 
             <Button onClick={handlersSettingsDialog.open}>Settings</Button>

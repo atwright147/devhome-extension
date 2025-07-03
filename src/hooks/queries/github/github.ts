@@ -155,3 +155,71 @@ export function usePullRequests(reposToFetch: RepoId[], limit = 10) {
     enabled: reposToFetch && reposToFetch.length > 0, // Only run query if reposToFetch is not empty
   });
 }
+
+const fetchTotalPullRequestsAndIssues = async (reposToFetch: RepoId[]) => {
+  if (!reposToFetch || reposToFetch.length === 0) {
+    return { totalPullRequests: 0, totalIssues: 0 };
+  }
+
+  const repoQueryParts: string[] = [];
+  reposToFetch.forEach((repoId, index) => {
+    const alias = `repo${index}`;
+    repoQueryParts.push(`
+      ${alias}: node(id: "${repoId}") {
+        ... on Repository {
+          pullRequests(states: [OPEN]) {
+            totalCount
+          }
+          issues(states: [OPEN]) {
+            totalCount
+          }
+        }
+      }
+    `);
+  });
+
+  const query = `
+    query GetTotalPullRequestsAndIssues {
+      ${repoQueryParts.join('\n')}
+    }
+  `;
+
+  try {
+    const response = await octokit.graphql(query);
+    // biome-ignore lint/suspicious/noExplicitAny: could be anything
+    const responseObj = response as Record<string, any>;
+
+    let totalPullRequests = 0;
+    let totalIssues = 0;
+
+    reposToFetch.forEach((_, index) => {
+      const alias = `repo${index}`;
+      const repoData = responseObj[alias];
+      if (repoData) {
+        totalPullRequests += repoData.pullRequests?.totalCount || 0;
+        totalIssues += repoData.issues?.totalCount || 0;
+      }
+    });
+
+    return { totalPullRequests, totalIssues };
+  } catch (err) {
+    const error = err as Error;
+    console.error('Error in useTotalPullRequestsAndIssues queryFn:', error);
+    throw new Error(
+      error.message || 'Failed to fetch total pull requests and issues.',
+    );
+  }
+};
+
+export function useTotalPullRequestsAndIssues() {
+  return useQuery({
+    queryKey: ['totalPullRequestsAndIssues'],
+    queryFn: async () => {
+      const github = await browser.storage.local.get('github');
+      // @ts-expect-error
+      const reposToFetch: RepoId[] = github?.github?.repos ?? [];
+      return fetchTotalPullRequestsAndIssues(reposToFetch);
+    },
+    enabled: true, // Always enabled, as repos are fetched inside the queryFn
+  });
+}
