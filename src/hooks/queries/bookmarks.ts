@@ -1,10 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import browser from 'webextension-polyfill';
 
-// Fetch bookmarks tree or a specific folder's subtree
 const fetchBookmarks = async (folderId?: string) => {
   if (folderId) {
-    // Returns an array with the folder node and its children as a hierarchy
     return browser.bookmarks.getSubTree(folderId);
   }
   return browser.bookmarks.getTree();

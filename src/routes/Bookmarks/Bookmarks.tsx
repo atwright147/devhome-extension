@@ -1,6 +1,6 @@
 import { Accordion, Group, Text } from '@mantine/core';
 import { IconFolderFilled } from '@tabler/icons-react';
-import { type JSX, useEffect } from 'react';
+import { type JSX, useEffect, useState } from 'react';
 import browser from 'webextension-polyfill';
 
 import { useBookmarks } from '@src/hooks/queries/bookmarks';
@@ -44,18 +44,6 @@ type BookmarkNode = {
 };
 
 function BookmarkTree({ nodes }: { nodes: BookmarkNode[] }) {
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    (async () => {
-      const settings = await browser.storage.local.get('settings');
-      console.info('settings:', settings);
-      console.info(
-        'bookmarkFolder children:',
-        await browser.bookmarks.getChildren(settings.settings.bookmarkFolder),
-      );
-    })();
-  }, []);
-
   if (!nodes || nodes.length === 0) return null;
 
   return (
@@ -97,20 +85,40 @@ function BookmarkTree({ nodes }: { nodes: BookmarkNode[] }) {
 }
 
 export function Bookmarks() {
+  const [bookmarksFolderId, setBookmarksFolderId] = useState<
+    string | undefined
+  >(undefined);
+
+  useEffect(() => {
+    (async () => {
+      const settings = await browser.storage.local.get('settings');
+      const folderId = (settings.settings as { bookmarkFolder?: string })
+        ?.bookmarkFolder;
+      setBookmarksFolderId(folderId);
+    })();
+  }, []);
+
   const { data: bookmarks, isLoading, error } = useBookmarks();
 
-  if (isLoading) {
+  const {
+    data: selectedFolder,
+    isLoading: isLoadingSelectedFolder,
+    error: errorSelectedFolder,
+  } = useBookmarks(bookmarksFolderId);
+
+  if (isLoading || isLoadingSelectedFolder) {
     return <div>Loading bookmarks…</div>;
   }
 
-  if (error) {
-    return <div>Error loading bookmarks: {error.message}</div>;
+  if (error || errorSelectedFolder) {
+    return <div>Error loading bookmarks: {error?.message}</div>;
   }
 
   return (
     <div>
       <h1>Bookmarks</h1>
-      <BookmarkTree nodes={bookmarks?.[0]?.children || []} />
+      <BookmarkTree nodes={selectedFolder?.[0]?.children || []} />
+      <hr />
       <BookmarkTree nodes={bookmarks?.[0]?.children || []} />
     </div>
   );
