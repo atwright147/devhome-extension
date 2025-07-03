@@ -146,8 +146,6 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
     return bookmarks ? flattenFolders(bookmarks, true) : [];
   }, [bookmarks, isLoading, error]);
 
-  console.info('Bookmark folders:', bookmarkFolders);
-
   const handleSubmit = async (values: typeof form.values) => {
     await browser.storage.local.set({ settings: values });
     props.onClose?.();
