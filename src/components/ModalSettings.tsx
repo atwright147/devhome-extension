@@ -9,12 +9,13 @@ import {
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { zodResolver } from 'mantine-form-zod-resolver';
-import { type JSX, use, useEffect, useMemo } from 'react';
+import { type JSX, useEffect, useMemo } from 'react';
 import browser from 'webextension-polyfill';
 import { z } from 'zod';
 
-import { isFolder, useBookmarks } from '@src/hooks/queries/bookmarks';
+import { useBookmarks } from '@src/hooks/queries/bookmarks';
 import type { Settings } from '@src/types/settings';
+import { flattenFolders } from '@src/utils/flattenFolders';
 
 interface Props extends ModalProps {}
 
@@ -104,38 +105,6 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
     })();
   }, []);
 
-  // Utility to recursively collect all folders in the bookmarks tree, skipping the root node if needed
-  function flattenFolders(
-    nodes: any[],
-    skipRoot = false,
-    parentPath = '',
-  ): { value: string; label: string }[] {
-    const result: { value: string; label: string }[] = [];
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-      if (isFolder(node)) {
-        if (skipRoot && i === 0) {
-          // Skip the first/top-level node, but process its children
-          if (node.children) {
-            result.push(...flattenFolders(node.children, false, parentPath));
-          }
-          continue;
-        }
-        const currentPath = parentPath
-          ? `${parentPath}/${node.title || 'Untitled Folder'}`
-          : node.title || 'Untitled Folder';
-        result.push({
-          value: node.id,
-          label: currentPath,
-        });
-        if (node.children) {
-          result.push(...flattenFolders(node.children, false, currentPath));
-        }
-      }
-    }
-    return result;
-  }
-
   const bookmarkFolders = useMemo(() => {
     if (isLoading) return [];
     if (error) {
@@ -154,14 +123,13 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
 
   return (
     <Modal {...props} title="Settings">
-      {/* biome-ignore lint/suspicious/noExplicitAny: ffs */}
-      <form onSubmit={form.onSubmit(handleSubmit as any)} noValidate>
+      <form onSubmit={form.onSubmit(handleSubmit)} noValidate>
         <Stack>
           <Fieldset legend="Bookmarks">
             <Select
               label="Bookmark Folder"
               placeholder="Select a folder"
-              data={bookmarkFolders as any}
+              data={bookmarkFolders}
               {...form.getInputProps('bookmarkFolder')}
             />
           </Fieldset>
