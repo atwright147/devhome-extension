@@ -60,6 +60,16 @@ const schema = z.object({
     .min(10, { message: 'Jira Access Token is required' })
     .optional()
     .or(z.literal('')),
+  jiraUserName: z
+    .string()
+    .min(1, { message: 'Jira User Name is required' })
+    .optional()
+    .or(z.literal('')),
+  jiraBaseUrl: z
+    .string()
+    .url({ message: 'Jira Base URL must be a valid URL' })
+    .optional()
+    .or(z.literal('')),
   jiraCacheTime: z
     .number()
     .min(1, { message: 'Jira API Cache Time is required' })
@@ -86,8 +96,7 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
 
   const form = useForm({
     mode: 'controlled',
-    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-    initialValues: defaultValues as any,
+    initialValues: defaultValues as unknown as Record<string, unknown>,
 
     validate: zodResolver(schema),
   });
@@ -97,10 +106,8 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
     (async () => {
       const { settings } = await browser.storage.local.get('settings');
       if (settings) {
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        form.setInitialValues(settings as any);
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        form.setValues(settings as any);
+        form.setInitialValues(settings as unknown as Record<string, unknown>);
+        form.setValues(settings as unknown as Record<string, unknown>);
       }
     })();
   }, []);
@@ -122,7 +129,7 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
   };
 
   return (
-    <Modal {...props} title="Settings">
+    <Modal {...props} title="Settings" size="lg">
       <form onSubmit={form.onSubmit(handleSubmit)} noValidate>
         <Stack>
           <Fieldset legend="Bookmarks">
@@ -181,6 +188,18 @@ export function ModalSettings({ ...props }: Props): JSX.Element {
               label="Jira Access Token"
               placeholder="Paste your token"
               {...form.getInputProps('jiraAccessToken')}
+            />
+
+            <TextInput
+              label="Jira User Name"
+              placeholder="Enter your username"
+              {...form.getInputProps('jiraUserName')}
+            />
+
+            <TextInput
+              label="Jira Base URL"
+              placeholder="Enter your Jira base URL"
+              {...form.getInputProps('jiraBaseUrl')}
             />
 
             <TextInput

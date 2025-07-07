@@ -7,5 +7,7 @@ export interface Settings {
   bitBucketAccessToken?: string;
   bitBucketCacheTime?: number;
   jiraAccessToken?: string;
+  jiraUserName?: string;
+  jiraBaseUrl?: string;
   jiraCacheTime?: number;
 }

@@ -11,6 +11,7 @@ import { Bookmarks as BookmarksRoute } from '@src/routes/Bookmarks/Bookmarks';
 import { Dashboard as DashboardRoute } from '@src/routes/Dashboard/Dashboard';
 import { Github as GithubRoute } from '@src/routes/Github/Github';
 import { Home as HomeRoute } from '@src/routes/Home/Home';
+import { Jira as JiraRoute } from '@src/routes/Jira/Jira';
 import { Nav } from '../../components/Nav';
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const routes = {
   '/dashboard': () => <DashboardRoute />,
   '/bookmarks': () => <BookmarksRoute />,
   '/github': () => <GithubRoute />,
+  '/jira': () => <JiraRoute />,
 };
 
 export default function App() {
