@@ -17,6 +17,7 @@ export function Nav() {
         href="/github"
         label={`Github (${totalCounts?.totalPullRequests || 0} PRs, ${totalCounts?.totalIssues || 0} Issues)`}
       />
+      <AppNavLink href="/jira" label="Jira" />
     </nav>
   );
 }
