@@ -1,4 +1,4 @@
-import { Box, Button, Container, Stack, Title } from '@mantine/core';
+import { Button, Container, Stack, Title } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { useMemo } from 'react';
 
