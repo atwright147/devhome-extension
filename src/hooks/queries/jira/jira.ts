@@ -1,15 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
+import type { SearchAndReconcileResults } from 'jira.js/version3/models/index';
 import browser from 'webextension-polyfill';
-
-interface JiraTicket {
-  id: string;
-  key: string;
-  fields: {
-    summary: string;
-    status: { name: string };
-    [key: string]: unknown;
-  };
-}
 
 interface UseJiraTicketsOptions {
   assignee?: string;
@@ -19,19 +10,11 @@ interface UseJiraTicketsOptions {
 
 const fetchJiraTickets = async (
   options: UseJiraTicketsOptions,
-): Promise<JiraTicket[]> => {
-  const result = await browser.runtime.sendMessage({
+): Promise<SearchAndReconcileResults> => {
+  return browser.runtime.sendMessage({
     type: 'FETCH_JIRA_TICKETS',
     payload: options,
   });
-
-  console.info('Jira tickets fetched:', result);
-
-  if (result.error) {
-    throw new Error(result.error);
-  }
-
-  return result.issues;
 };
 
 export function useJiraTickets(options: UseJiraTicketsOptions) {

@@ -1,4 +1,4 @@
-import { Container, Stack, Title } from '@mantine/core';
+import { Card, Container, Stack, Text, Title } from '@mantine/core';
 
 import { useJiraTickets } from '@src/hooks/queries/jira/jira';
 
@@ -8,15 +8,36 @@ export function Jira() {
   return (
     <>
       <Container>
-        <Title order={1}>Jira</Title>
-
-        <pre>{JSON.stringify(data, null, 2)}</pre>
-        <pre>{JSON.stringify(error, null, 2)}</pre>
+        <Title order={1}>Jirax</Title>
 
         <Stack>
-          {data?.map((ticket) => (
-            <pre key={ticket.id}>{JSON.stringify(ticket, null, 2)}</pre>
-          ))}
+          {data?.issues?.map((issue) => {
+            return (
+              <Card
+                key={issue.id}
+                shadow="sm"
+                padding="lg"
+                radius="md"
+                withBorder
+              >
+                <Stack gap="0">
+                  <Title order={3} mb={0}>
+                    {issue.key}
+                  </Title>
+
+                  <Text>{issue.fields.summary}</Text>
+
+                  <a
+                    href={issue.self}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {issue.self}
+                  </a>
+                </Stack>
+              </Card>
+            );
+          })}
         </Stack>
       </Container>
     </>
